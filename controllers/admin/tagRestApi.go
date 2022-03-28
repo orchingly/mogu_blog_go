@@ -94,7 +94,7 @@ func (c *TagRestApi) Edit() {
 	var tag models.Tag
 	common.DB.Where("uid=?", tagVO.Uid).Find(&tag)
 	var tempTag models.Tag
-	if tag != (models.Tag{}) && tag.Content == tagVO.Content {
+	if tag != (models.Tag{}) && tag.Content == tagVO.Content && tag.Uid != tagVO.Uid{
 		common.DB.Where("content=? and status=?", tagVO.Content, 1).First(&tempTag)
 		if tempTag != (models.Tag{}) {
 			c.ErrorWithMessage("记录已存在")
