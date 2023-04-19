@@ -2,12 +2,13 @@ package admin
 
 import (
 	"encoding/json"
-	"github.com/rs/xid"
+	"math/rand"
 	"mogu-go-v2/common"
 	"mogu-go-v2/controllers/base"
 	"mogu-go-v2/models"
 	"mogu-go-v2/models/vo"
 	"mogu-go-v2/service"
+	"time"
 )
 
 /**
@@ -22,6 +23,7 @@ type SystemConfigRestApi struct {
 }
 
 func (c *SystemConfigRestApi) GetSystemConfig() {
+	c.CheckLogin()
 	result := service.SystemConfigService.GetConfig()
 	c.Data["json"] = result
 	err := c.ServeJSON()
@@ -31,6 +33,7 @@ func (c *SystemConfigRestApi) GetSystemConfig() {
 }
 
 func (c *SystemConfigRestApi) EditSystemConfig() {
+	c.CheckLogin()
 	var systemConfigVO vo.SystemConfigVO
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &systemConfigVO)
 	if err != nil {
@@ -51,7 +54,7 @@ func (c *SystemConfigRestApi) EditSystemConfig() {
 		openDashboardNotification := common.InterfaceToString(systemConfigVO.OpenDashboardNotification)
 		contentPicturePriority := common.InterfaceToString(systemConfigVO.ContentPicturePriority)
 		systemConfig := models.SystemConfig{
-			Uid:                       xid.New().String(),
+			Uid:                       RandString(16),
 			QiNiuAccessKey:            systemConfigVO.QiNiuAccessKey,
 			QiNiuSecretKey:            systemConfigVO.QiNiuSecretKey,
 			Email:                     systemConfigVO.Email,
@@ -78,7 +81,7 @@ func (c *SystemConfigRestApi) EditSystemConfig() {
 			OpenDashboardNotification: openDashboardNotification,
 			DashboardNotification:     systemConfigVO.DashboardNotification,
 			ContentPicturePriority:    contentPicturePriority,
-			SearchModel:    		   systemConfigVO.SearchModel,
+			SearchModel:               systemConfigVO.SearchModel,
 		}
 		common.DB.Create(&systemConfig)
 	default:
@@ -121,6 +124,16 @@ func (c *SystemConfigRestApi) EditSystemConfig() {
 	}
 	common.RedisUtil.Delete("SYSTEM_CONFIG")
 	c.SuccessWithMessage("更新成功")
+}
+
+func RandString(len int) string {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	bytes := make([]byte, len)
+	for i := 0; i < len; i++ {
+		b := r.Intn(26) + 65
+		bytes[i] = byte(b)
+	}
+	return string(bytes)
 }
 
 func (c *SystemConfigRestApi) CleanRedisByKey() {
