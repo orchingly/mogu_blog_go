@@ -1,9 +1,11 @@
 package common
 
 import (
+	"regexp"
+	"strings"
+
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
-	"strings"
 )
 
 /**
@@ -68,7 +70,12 @@ func (fileUtil) MarkdownToHTML(md string) string {
 		Extensions: myExtensions,
 	})
 	theHTML := string(bytes)
-	return bluemonday.UGCPolicy().Sanitize(theHTML)
+
+	p := bluemonday.UGCPolicy()
+	p.AllowAttrs("class").Matching(regexp.MustCompile("^language-[a-zA-Z0-9]+$")).OnElements("code")
+
+	return p.Sanitize(theHTML)
+	// return theHTML
 }
 
 func (fileUtil) GetFileName(oraginalFilename string) string {
