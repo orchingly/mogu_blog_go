@@ -12,9 +12,6 @@ package web
 
 import (
 	"encoding/json"
-	"github.com/beego/beego/v2/server/web"
-	"github.com/rs/xid"
-	"gorm.io/gorm/clause"
 	"log"
 	"mogu-go-v2/common"
 	"mogu-go-v2/controllers/base"
@@ -27,6 +24,10 @@ import (
 	"strings"
 	"time"
 	"unicode/utf8"
+
+	"github.com/beego/beego/v2/server/web"
+	"github.com/rs/xid"
+	"gorm.io/gorm/clause"
 )
 
 /**
@@ -379,8 +380,8 @@ func (c *CommentRestApi) Add() {
 				log.Print("发送评论邮件")
 				m := map[string]string{}
 				m["email"] = toUser.Email
-				m["text"] = commentVO.Content
-				m["to_text"] = toComment.Content
+				m["text"] = common.FileUtil.MarkdownToHTML(commentVO.Content)
+				m["to_text"] = common.FileUtil.MarkdownToHTML(toComment.Content)
 				m["nickname"] = user.NickName
 				m["to_nickname"] = toUser.NickName
 				m["user_uid"] = toUser.Uid
@@ -406,7 +407,7 @@ func (c *CommentRestApi) Add() {
 	var comment models.Comment
 	comment.Source = commentVO.Source
 	comment.BlogUid = commentVO.BlogUid
-	comment.Content = commentVO.Content
+	comment.Content = common.FileUtil.MarkdownToHTML(commentVO.Content)
 	comment.ToUserUid = commentVO.ToUserUid
 	if commentVO.ToUid != "" {
 		var toComment models.Comment
@@ -425,7 +426,7 @@ func (c *CommentRestApi) Add() {
 				commentSource := common.Emu.CommentSourceEmu()
 				sourceName := commentSource[commentVO.Source]["name"]
 				linkText := "<a href=\" " + getUrlByCommentSource(commentVO) + "\">" + sourceName + "</a>\n"
-				commentContent := linkText + "收到新的评论: " + commentVO.Content
+				commentContent := linkText + "收到新的评论: " + common.FileUtil.MarkdownToHTML(commentVO.Content)
 				common.Email.SentSimpleEmail(systemConfig.Email, commentContent)
 			} else {
 				c.Result("error", "网站没有配置通知接收的邮箱地址！")
@@ -449,11 +450,11 @@ func (c *CommentRestApi) Add() {
 	if comment.ToUserUid != "" {
 		count := common.RedisUtil.Get("USER_RECEIVE_COMMENT_COUNT:" + comment.ToUserUid)
 		if count == "" {
-			common.RedisUtil.Set("USER_RECEIVE_COMMENT_COUNT:" + comment.ToUserUid, "1")
+			common.RedisUtil.Set("USER_RECEIVE_COMMENT_COUNT:"+comment.ToUserUid, "1")
 		} else {
 			countTemp, _ := strconv.Atoi(count)
 			countTemp++
-			common.RedisUtil.SetEx("USER_RECEIVE_COMMENT_COUNT:" + comment.ToUserUid, strconv.Itoa(countTemp), 10, 7 * 24 * time.Hour)
+			common.RedisUtil.SetEx("USER_RECEIVE_COMMENT_COUNT:"+comment.ToUserUid, strconv.Itoa(countTemp), 10, 7*24*time.Hour)
 		}
 	}
 
