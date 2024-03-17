@@ -13,8 +13,6 @@ package web
 import (
 	"encoding/json"
 	"fmt"
-	beego "github.com/beego/beego/v2/server/web"
-	"github.com/rs/xid"
 	"mogu-go-v2/common"
 	"mogu-go-v2/controllers/base"
 	"mogu-go-v2/models"
@@ -23,6 +21,9 @@ import (
 	"reflect"
 	"strconv"
 	"time"
+
+	beego "github.com/beego/beego/v2/server/web"
+	"github.com/rs/xid"
 )
 
 /**
@@ -75,13 +76,16 @@ func (c *BlogContentRestApi) GetBlogByUid() {
 	}()
 	c.Wg.Wait()
 	setPhotoListByBlog(&blog)
+	blog.Content = common.FileUtil.MarkdownToHTML(blog.Content)
 	c.SuccessWithData(blog)
 }
 
 func setBlogCopyright(blog *models.Blog) {
 	if blog.IsOriginal == "1" {
 		originalTemplate, _ := beego.AppConfig.String("original_template")
-		blog.Copyright = originalTemplate
+		web_projectName, _ := beego.AppConfig.String("project_name")
+		str := fmt.Sprintf(originalTemplate, blog.Author, web_projectName)
+		blog.Copyright = str
 	} else {
 		reprintedTemplate, _ := beego.AppConfig.String("reprinted_template")
 		variable := []string{
@@ -129,10 +133,12 @@ func (c *BlogContentRestApi) GetSameBlogByBlogUid() {
 		if item.Uid == blogUid {
 			continue
 		}
+		//隐藏原始数据,减少数据传输
+		item.Content = ""
 		newList = append(newList, item)
 	}
 	iPage := page.IPage{
-		Records: pageList,
+		Records: newList,
 		Total:   total,
 		Size:    10,
 		Current: 1,

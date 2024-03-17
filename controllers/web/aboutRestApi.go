@@ -45,5 +45,6 @@ func (c *AboutRestApi) GetMe() {
 		PhotoList:    admin.PhotoList,
 		PersonResume: admin.PersonResume,
 	}
+	result.PersonResume = common.FileUtil.MarkdownToHTML(result.PersonResume)
 	c.SuccessWithData(result)
 }
