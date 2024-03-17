@@ -1,10 +1,8 @@
 package common
 
 import (
-	"regexp"
 	"strings"
 
-	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
 )
 
@@ -71,11 +69,12 @@ func (fileUtil) MarkdownToHTML(md string) string {
 	})
 	theHTML := string(bytes)
 
-	p := bluemonday.UGCPolicy()
-	p.AllowAttrs("class").Matching(regexp.MustCompile("^language-[a-zA-Z0-9]+$")).OnElements("code")
+	// p := bluemonday.UGCPolicy()
+	// p.AllowAttrs("class").Matching(regexp.MustCompile("^language-[a-zA-Z0-9]+$")).OnElements("code")
 
-	return p.Sanitize(theHTML)
-	// return theHTML
+	//裁剪后数学公式无法渲染， <br /> 会裁剪为<br/>
+	// return p.Sanitize(theHTML)
+	return theHTML
 }
 
 func (fileUtil) GetFileName(oraginalFilename string) string {
