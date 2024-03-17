@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/rs/xid"
 	"mime/multipart"
 	"mogu-go-v2/common"
 	"mogu-go-v2/controllers/base"
@@ -16,6 +15,8 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/rs/xid"
 )
 
 const sortDesc = "sort desc"
@@ -335,7 +336,7 @@ func (c *BlogRestApi) UploadLocalBlog() {
 			}
 		}
 		fileStream := bytes.Join(fil, []byte(""))
-		blogContent := common.FileUtil.MarkdownToHTML(string(fileStream))
+		blogContent := string(fileStream)
 		fileContentList = append(fileContentList, blogContent)
 		pictureList := c.GetString("pictureList")
 		var list []maps.PictureListMap
