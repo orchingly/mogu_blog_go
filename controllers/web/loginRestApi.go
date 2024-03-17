@@ -12,14 +12,15 @@ package web
 
 import (
 	"encoding/json"
-	beego "github.com/beego/beego/v2/server/web"
-	"github.com/rs/xid"
 	"mogu-go-v2/common"
 	"mogu-go-v2/controllers/base"
 	"mogu-go-v2/models"
 	"mogu-go-v2/models/vo"
 	"mogu-go-v2/service"
 	"time"
+
+	beego "github.com/beego/beego/v2/server/web"
+	"github.com/rs/xid"
 )
 
 /**
@@ -127,6 +128,7 @@ func (c *LoginRestAPI) Register() {
 	user.Status = 2
 	user.Birthday = t
 	user.LastLoginTime = t
+	user.CommentStatus = 1
 	common.DB.Create(&user)
 	token := xid.New().String()
 	user.PassWord = ""
