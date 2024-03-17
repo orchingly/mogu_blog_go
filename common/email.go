@@ -110,7 +110,7 @@ func sendEmail(email, text string) {
 	eMail := mail.NewMSG()
 	eMail.SetFrom(from).
 		AddTo(email).
-		SetSubject("蘑菇博客GO")
+		SetSubject("Daily's Blog")
 
 	eMail.SetBody(mail.TextHTML, text)
 
