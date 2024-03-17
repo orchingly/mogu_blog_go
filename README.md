@@ -1,5 +1,18 @@
 # 蘑菇博客Go版
 
+## daily_blog分支
+
+- SQL搜索范围扩大到博客正文
+- 用户注册默认开启评论
+- 评论支持markdown渲染效果，不太完美
+- minio默认开启SSL
+- MarkdownToHTML 保留class=language属性，支持前端mermaid渲染
+- 自定义了网站logo和名称
+
+- 基于daily_blog分支部署的个人博客网站 [Daily's Blog](https://blog.dailys.top)
+
+
+
 <p align=center>
     <a href="http://www.moguit.cn">
         <img src="./doc/images/gitee/favicon.ico" alt="蘑菇博客Go版" style="width:200px;height:200px">
