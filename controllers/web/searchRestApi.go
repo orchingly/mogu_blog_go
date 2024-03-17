@@ -41,7 +41,7 @@ func (c *SearchRestApi) SqlSearchBlog() {
 		c.ErrorWithMessage("关键字不能为空")
 	} else {
 		var blogList []models.BlogNoContent
-		where := "status=? and is_publish=? and (title like '%" + keyword + "%'" + "or summary like '%" + keyword + "%')"
+		where := "status=? and is_publish=? and (title like '%" + keyword + "%'" + "or summary like '%" + keyword + "%' or content like '%" + keyword + "%')"
 		common.DB.Where(where, 1, "1").Offset((currentPage - 1) * pageSize).Limit(pageSize).Order("click_count desc").Find(&blogList)
 		var blogSortUidList []string
 		pictureMap := map[string]string{}
