@@ -1,10 +1,11 @@
 package common
 
 import (
+	"mogu-go-v2/models"
+
 	"github.com/astaxie/beego/logs"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-	"mogu-go-v2/models"
 )
 
 /**
@@ -18,11 +19,11 @@ type minioUtil struct{}
 
 var minioClient *minio.Client
 
-func initMinio(sysConfig models.SystemConfig)(error, *minio.Client)  {
+func initMinio(sysConfig models.SystemConfig) (error, *minio.Client) {
 	endpoint := sysConfig.MinioEndPoint
 	accessKey := sysConfig.MinioAccessKey
 	secretKey := sysConfig.MinioSecretKey
-	useSSL := false
+	useSSL := true
 	// 初使化minio client对象。
 	minioClient, err := minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKey, secretKey, ""),
@@ -67,10 +68,10 @@ func (minioUtil) UploadMinio(fileName string, localFilePath string, sysConfig mo
 
 func (minioUtil) DeleteFileList(fileNameList []string, qiNiuConfig map[string]interface{}) bool {
 	systemConfig := models.SystemConfig{
-		 MinioAccessKey: qiNiuConfig["minioAccessKey"].(string),
-		 MinioSecretKey: qiNiuConfig["minioNiuSecretKey"].(string),
-		 MinioEndPoint: qiNiuConfig["minioEndPoint"].(string),
-		 MinioBucket: qiNiuConfig["minioBucket"].(string),
+		MinioAccessKey: qiNiuConfig["minioAccessKey"].(string),
+		MinioSecretKey: qiNiuConfig["minioNiuSecretKey"].(string),
+		MinioEndPoint:  qiNiuConfig["minioEndPoint"].(string),
+		MinioBucket:    qiNiuConfig["minioBucket"].(string),
 	}
 	err, minioClient := initMinio(systemConfig)
 	if err != nil {
@@ -92,8 +93,8 @@ func (minioUtil) DeleteFile(fileName string, qiNiuConfig map[string]interface{})
 	systemConfig := models.SystemConfig{
 		MinioAccessKey: qiNiuConfig["minioAccessKey"].(string),
 		MinioSecretKey: qiNiuConfig["minioNiuSecretKey"].(string),
-		MinioEndPoint: qiNiuConfig["minioEndPoint"].(string),
-		MinioBucket: qiNiuConfig["minioBucket"].(string),
+		MinioEndPoint:  qiNiuConfig["minioEndPoint"].(string),
+		MinioBucket:    qiNiuConfig["minioBucket"].(string),
 	}
 	err, minioClient := initMinio(systemConfig)
 	if err != nil {
