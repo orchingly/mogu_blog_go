@@ -61,7 +61,9 @@ func (fileUtil) MarkdownToHTML(md string) string {
 		blackfriday.EXTENSION_HEADER_IDS |
 		blackfriday.EXTENSION_BACKSLASH_LINE_BREAK |
 		blackfriday.EXTENSION_DEFINITION_LISTS |
-		blackfriday.EXTENSION_HARD_LINE_BREAK
+		blackfriday.EXTENSION_HARD_LINE_BREAK |
+		blackfriday.EXTENSION_FOOTNOTES |
+		blackfriday.EXTENSION_HEADER_IDS
 
 	renderer := blackfriday.HtmlRenderer(myHTMLFlags, "", "")
 	bytes := blackfriday.MarkdownOptions([]byte(md), renderer, blackfriday.Options{
