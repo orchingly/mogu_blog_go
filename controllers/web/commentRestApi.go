@@ -176,7 +176,8 @@ func (c *CommentRestApi) GetListByUser() {
 		c.ThrowError("00", "传入参数有误！")
 		panic(err)
 	}
-	token := c.Ctx.GetCookie("token")
+	header := c.Ctx.Request.Header
+	token := header.Get("Authorization")
 	if token == "" {
 		c.Result("error", "token令牌未被识别，请重新登录")
 		return
@@ -187,7 +188,7 @@ func (c *CommentRestApi) GetListByUser() {
 	if err1 != nil {
 		panic(err1)
 	}
-	requestUserUid := c.GetSession("userUid").(string)
+	requestUserUid := user.Uid
 	var pageList []models.Comment
 	common.DB.Where("status=? and type=? and (user_uid=? or to_user_uid=?)", 1, 0, requestUserUid, requestUserUid).Offset((userVO.CurrentPage - 1) * userVO.PageSize).Limit(userVO.PageSize).Order("create_time desc").Find(&pageList)
 	var userUidList []string
