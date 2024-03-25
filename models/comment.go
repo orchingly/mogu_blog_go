@@ -1,8 +1,9 @@
 package models
 
 import (
-	_ "gorm.io/gorm"
 	"time"
+
+	_ "gorm.io/gorm"
 )
 
 /**
@@ -30,7 +31,7 @@ type Comment struct {
 	ToUser          User      `gorm:"foreignKey:ToUserUid;references:Uid" json:"toUser"`
 	ReplyList       []Comment `gorm:"-" json:"replyList"`
 	ToComment       *Comment  `gorm:"-" json:"toComment"`
-	SourceName      string    `gorm:"-" json:"sourceName"`
+	SourceName      string    `json:"sourceName"`
 	Blog            Blog      `gorm:"foreignKey:BlogUid;references:Uid" json:"blog"`
 }
 

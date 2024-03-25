@@ -20,4 +20,5 @@ type CommentVO struct {
 	Content     string      `json:"content"`
 	BlogUid     string      `json:"blogUid"`
 	Source      string      `json:"source"`
+	SourceName  string      `json:"sourceName"`
 }

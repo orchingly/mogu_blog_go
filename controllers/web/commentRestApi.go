@@ -221,9 +221,9 @@ func (c *CommentRestApi) GetListByUser() {
 		}
 	}
 	pictureList := map[string]interface{}{}
-	if reflect.DeepEqual(fileUids, strings.Builder{}) {
-		pictureList = service.FileService.GetPicture(fileUids.String(), ",")
-	}
+	// if reflect.DeepEqual(fileUids, strings.Builder{}) {
+	pictureList = service.FileService.GetPicture(fileUids.String(), ",")
+	// }
 	picList := common.WebUtil.GetPictureMap(pictureList)
 	pictureMap := map[string]string{}
 	for _, item := range picList {
@@ -241,14 +241,15 @@ func (c *CommentRestApi) GetListByUser() {
 	for i, item := range pageList {
 		if item.UserUid != "" {
 			pageList[i].User = userMap[item.UserUid].(models.User)
+			item.User = userMap[item.UserUid].(models.User)
 		}
 		if item.ToUserUid != "" {
 			pageList[i].ToUser = userMap[item.ToUserUid].(models.User)
 		}
-		if item.Source != "" {
-			eCommentSource := common.Emu.CommentSourceEmu()
-			pageList[i].SourceName = eCommentSource[item.Source]["name"]
-		}
+		// if item.Source != "" {
+		// 	eCommentSource := common.Emu.CommentSourceEmu()
+		// 	pageList[i].SourceName = eCommentSource[item.Source]["name"]
+		// }
 		if item.UserUid == requestUserUid {
 			commentList = append(commentList, item)
 		}
@@ -339,7 +340,8 @@ func (c *CommentRestApi) Add() {
 	}
 	var user models.User
 	tokenJson := common.RedisUtil.Get("USER_TOKEN:" + token)
-	//common.DB.Where("uid=?", userUid).Find(&user)
+	//save user
+	common.DB.Where("uid=?", commentVO.UserUid).Find(&user)
 	err1 := json.Unmarshal([]byte(tokenJson), &user)
 	if err1 != nil {
 		panic(err)
@@ -436,6 +438,7 @@ func (c *CommentRestApi) Add() {
 	}
 	comment.UserUid = commentVO.UserUid
 	comment.ToUid = commentVO.ToUid
+	comment.SourceName = commentVO.SourceName
 	comment.Uid = xid.New().String()
 	common.DB.Create(&comment)
 	if user.Avatar != "" {

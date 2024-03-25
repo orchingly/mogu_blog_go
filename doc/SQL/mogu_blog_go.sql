@@ -2,7 +2,8 @@
 SQLyog Ultimate v12.09 (64 bit)
 MySQL - 10.1.35-MariaDB : Database - mogu_blog_go
 *********************************************************************
-*/
+*/
+
 
 /*!40101 SET NAMES utf8 */;
 
@@ -191,9 +192,10 @@ CREATE TABLE `t_comment` (
   `content` varchar(2048) DEFAULT NULL COMMENT '评论内容',
   `blog_uid` varchar(32) DEFAULT NULL COMMENT '博客uid',
   `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '状态',
-  `create_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '创建时间',
-  `update_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '更新时间',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   `source` varchar(255) NOT NULL COMMENT '评论来源： MESSAGE_BOARD，ABOUT，BLOG_INFO 等',
+  `source_name` varchar(255) DEFAULT "" COMMENT '文章标题',
   `TYPE` tinyint(1) NOT NULL DEFAULT '0' COMMENT '评论类型 1:点赞 0:评论',
   `first_comment_uid` varchar(32) DEFAULT NULL COMMENT '一级评论UID',
   PRIMARY KEY (`uid`)
