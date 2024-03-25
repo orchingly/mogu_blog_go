@@ -266,12 +266,22 @@ func (c *CommentRestApi) GetListByUser() {
 func (c *CommentRestApi) GetPraiseListByUser() {
 	currentPage, _ := c.GetInt("currentPage", 1)
 	pageSize, _ := c.GetInt("pageSize", 10)
-	token := c.Ctx.GetCookie("token")
+	// token := c.Ctx.GetCookie("token")
+	header := c.Ctx.Request.Header
+	token := header.Get("Authorization")
 	if token == "" {
 		c.Result("error", "token令牌未被识别，请重新登录")
 		return
 	}
-	userUid := c.GetSession("userUid").(string)
+	userJson := common.RedisUtil.Get("USER_TOKEN:" + token)
+	var user models.User
+	err1 := json.Unmarshal([]byte(userJson), &user)
+	if err1 != nil {
+		panic(err1)
+	}
+	userUid := user.Uid
+
+	// userUid := c.GetSession("userUid").(string)
 	var pageList []models.Comment
 	var total int64
 	c.Wg.Add(2)
