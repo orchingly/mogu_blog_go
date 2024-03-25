@@ -220,6 +220,9 @@ func (c *BlogRestApi) Edit() {
 	isSave := true
 	if err1 != nil {
 		isSave = false
+		//返回错误信息，否则保存失败会导致数据丢失
+		c.ErrorWithMessage(string(err1.Error()))
+		return
 	}
 	service.BlogService.UpdateSolrAndRedis(isSave, blog)
 	common.RedisUtil.Delete("BLOG_LEVEL:" + strconv.Itoa(blog.Level))
@@ -287,7 +290,12 @@ func (c *BlogRestApi) Add() {
 	blog.OpenComment = blogVO.OpenComment
 	blog.Type = blogVO.Type
 	blog.OutsideLink = blogVO.OutsideLink
-	common.DB.Create(&blog)
+	err1 := common.DB.Create(&blog).Error
+	if err1 != nil {
+		//返回错误信息，否则保存失败会导致数据丢失
+		c.ErrorWithMessage(string(err1.Error()))
+		return
+	}
 	common.RedisUtil.Delete("BLOG_LEVEL:" + strconv.Itoa(blog.Level))
 	c.SuccessWithMessage("新增成功")
 }
