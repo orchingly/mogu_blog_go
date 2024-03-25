@@ -33,18 +33,19 @@ type SortRestApi struct {
 
 func (c *SortRestApi) GetSortList() {
 	base.L.Print("获取归档日期")
-	monthResult := common.RedisUtil.Get("MONTH_SET")
-	if monthResult != "" {
-		var list []interface{}
-		err := json.Unmarshal([]byte(monthResult), &list)
-		if err != nil {
-			panic(err)
-		}
-		c.SuccessWithData(list)
-		return
-	}
+	//读缓存会导致无法更新列表
+	// monthResult := common.RedisUtil.Get("MONTH_SET")
+	// if monthResult != "" {
+	// 	var list []interface{}
+	// 	err := json.Unmarshal([]byte(monthResult), &list)
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// 	c.SuccessWithData(list)
+	// 	return
+	// }
 	var list []models.BlogNoContent
-	common.DB.Where("status=?,and is_publish=?", 1, "1").Order("create_time desc").Find(&list)
+	common.DB.Where("status=? and is_publish=?", 1, "1").Order("create_time desc").Find(&list)
 	list = service.BlogService.SetTagAndSortAndPictureByBlogListNoContent(list)
 	m := map[string][]models.BlogNoContent{}
 	var monthSet []string
@@ -79,16 +80,16 @@ func (c *SortRestApi) GetArticleByMonth() {
 		c.ErrorWithMessage("参数传入错误")
 		return
 	}
-	contentResult := common.RedisUtil.Get("BLOG_SORT_BY_MONTH:" + monthDate)
-	if contentResult != "" {
-		var list []interface{}
-		err := json.Unmarshal([]byte(contentResult), &list)
-		if err != nil {
-			panic(err)
-		}
-		c.SuccessWithData(list)
-		return
-	}
+	// contentResult := common.RedisUtil.Get("BLOG_SORT_BY_MONTH:" + monthDate)
+	// if contentResult != "" {
+	// 	var list []interface{}
+	// 	err := json.Unmarshal([]byte(contentResult), &list)
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// 	c.SuccessWithData(list)
+	// 	return
+	// }
 	var list []models.BlogNoContent
 	common.DB.Where("status=? and is_publish=?", 1, "1").Order("create_time desc").Find(&list)
 	list = service.BlogService.SetTagAndSortAndPictureByBlogListNoContent(list)
@@ -115,5 +116,5 @@ func (c *SortRestApi) GetArticleByMonth() {
 	monthSet = common.RemoveRepByMap(monthSet)
 	b, _ := json.Marshal(monthSet)
 	common.RedisUtil.Set("MONTH_SET", string(b))
-	c.SuccessWithData(monthDate)
+	c.SuccessWithData(list)
 }

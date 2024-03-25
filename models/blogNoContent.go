@@ -7,8 +7,9 @@ package models
  * @version 1.0
  */
 import (
-	_ "gorm.io/gorm"
 	_type "mogu-go-v2/models/type"
+
+	_ "gorm.io/gorm"
 )
 
 type BlogNoContent struct {
