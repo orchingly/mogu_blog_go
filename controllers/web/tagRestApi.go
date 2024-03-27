@@ -63,11 +63,11 @@ func (c *TagRestApi) GetArticleByTagUid() {
 	var total int64
 	c.Wg.Add(2)
 	go func() {
-		common.DB.Model(&models.BlogNoContent{}).Where("status=? and is_publish=? and tag_uid=?", 1, "1", tagUid).Count(&total)
+		common.DB.Model(&models.BlogNoContent{}).Where("status=? and is_publish=? and  locate(?, tag_uid) > 0", 1, "1", tagUid).Count(&total)
 		c.Wg.Done()
 	}()
 	go func() {
-		common.DB.Where("status=? and is_publish=? and tag_uid=?", 1, "1", tagUid).Offset((currentPage - 1) * pageSize).Limit(pageSize).Order("create_time desc").Find(&pageList)
+		common.DB.Where("status=? and is_publish=? and  locate(?, tag_uid) > 0", 1, "1", tagUid).Offset((currentPage - 1) * pageSize).Limit(pageSize).Order("create_time desc").Find(&pageList)
 		c.Wg.Done()
 	}()
 	c.Wg.Wait()
